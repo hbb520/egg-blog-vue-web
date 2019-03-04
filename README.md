@@ -1,6 +1,6 @@
-# koa2-buluo-vue
+# Koa2-blog-vue-web
 
-> A Vue.js project
+> 服务端接口基于[Koa2-blog-vue](https://github.com/hbb520/Koa2-blog-vue)
 
 ## Build Setup
 
