@@ -1,4 +1,4 @@
-import {login, create, signup} from '@/api/user.js';
+import {create, login, signup} from '@/api/user.js';
 export default {
   components: {},
   data () {
@@ -39,18 +39,28 @@ export default {
   },
   methods: {
     handleSubmit(name){
+      if (this.formInline.password != this.formInline.repeatpass) {
+        this.$Message.error(
+          '两次输入的密码不一致'
+        );
+        return;
+      }
       this.$refs[name].validate((valid) => {
         if (valid) {
           signup({
-            name: this.formInline.user,
-            password: this.formInline.password,
-            repeatpass: this.formInline.repeatpass,
+            username: this.formInline.user,
+            password: this.formInline.password
           },).then(res => {
             if (res) {
-              if (res.code == 200) {
+              if (res.status == 0) {
                 this.$Message.success('注册成功啦~');
-              } else if (res.code == 500) {
-                this.$Message.info(res.message);
+                setTimeout(() => {
+                  this.$router.push({
+                    path: '/login'
+                  });
+                }, 500);
+              } else if (res.status == 1) {
+                this.$Message.info(res.msg);
               }
             }
           });

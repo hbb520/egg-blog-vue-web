@@ -5,7 +5,7 @@
         <Tabs :animated="false" @on-click="tabClick">
           <TabPane label="所有" name="所有"></TabPane>
           <TabPane label="推荐" name="推荐"></TabPane>
-          <TabPane :label="item.tagText" v-for="item in TagList" :key="item.tagText" :name="item.tagText"></TabPane>
+          <TabPane :label="item.name" v-for="item in TagList" :key="item.id" :name="JSON.stringify(item.id)"></TabPane>
         </Tabs>
       </div>
 
@@ -33,10 +33,10 @@
           </div>
           <div class="post-right">
             <div class="ellipsis">
-              <i class="icon iconfont icon-yonghu"></i>{{item.name}}
+              <i class="icon iconfont icon-yonghu"></i>{{item.nickname}}
             </div>
             <div class="ellipsis">
-              <i class="icon iconfont icon-mudedi-liulanliang"></i>{{item.pv}}
+              <i class="icon iconfont icon-mudedi-liulanliang"></i>{{item.page_view}}
             </div>
             <div class="ellipsis">
               <i class="icon iconfont icon-pinglun-copy"></i>{{item.comments }}

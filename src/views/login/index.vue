@@ -1,11 +1,14 @@
 <template>
+
   <div id="login">
+
     <div class="SignFlowHomepage-content">
       <div class="Card SignContainer-content">
         <div class="SignFlowHeader-slogen">登录前端部落，发现更大的世界</div>
         <div class="Login-content">
           <Form ref="formInline" :model="formInline" :rules="ruleInline">
             <FormItem prop="user">
+
               <Input type="text" v-model="formInline.user" placeholder="账号" size="large">
               <Icon type="ios-person-outline" slot="prepend"></Icon>
               </Input>

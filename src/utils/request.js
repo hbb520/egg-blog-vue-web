@@ -5,7 +5,7 @@ import Router from '../router';
 axios.defaults.withCredentials = true;     //为了跨域开发仍能保存session
 const service = axios.create({
   baseURL: process.env.BASE_API, // api的base_url
-  timeout: 5000, // 请求超时时间
+  timeout: 50000, // 请求超时时间
 
 });
 

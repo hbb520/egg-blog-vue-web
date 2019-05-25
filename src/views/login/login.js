@@ -1,4 +1,4 @@
-import {login, create} from '@/api/user.js';
+import {create, login} from '@/api/user.js';
 export default {
   components: {},
   data () {
@@ -26,13 +26,14 @@ export default {
       this.$refs[name].validate((valid) => {
         if (valid) {
           login({
-            name: this.formInline.user,
+            username: this.formInline.user,
             password: this.formInline.password,
           },).then(res => {
             if (res) {
-              if (res.code == 200) {
-                this.$Cookies.set('avator', res.avator);
-                this.$Cookies.set('username', res.username);
+              if (res.status == 0 && res.msg == '登录成功') {
+                this.$Cookies.set('avator', res.data.avator);
+                this.$Cookies.set('nickname', res.data.nickname);
+                this.$Cookies.set('userId', res.data.id);
                 this.$router.push({
                   path: '/home'
                 });

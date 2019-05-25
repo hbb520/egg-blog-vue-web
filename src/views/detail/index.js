@@ -1,11 +1,11 @@
 import {
-  getDetail,
-  commentPage,
   comment,
+  commentPage,
   commentRemove,
-  postsRemove,
+  getDetail,
+  postCancelRecommend,
   postRecommend,
-  postCancelRecommend
+  postsRemove
 } from '@/api/user';
 import ArticleRight from '@/views/components/article-right/index.vue';
 import VueUEditor from '@/views/components/UEditor';
@@ -20,9 +20,10 @@ export default {
     return {
       imgR: process.env.imgR,
       avatar: this.$Cookies.get('avatar'),
-      username: this.$Cookies.get('username'),
+      username: this.$Cookies.get('nickname'),
       logo: this.$Cookies.get('logo'),
       DetailData: {
+        category: {},
         name: null
       },
       list: [],
@@ -74,7 +75,7 @@ export default {
       getDetail(this.$route.params.id).then(res => {
         this.DetailData = res.data;
         this.loading = true;
-        this.DetailData.moment = this.formatMsgTime(this.DetailData.moment);
+        this.DetailData.updateTime = this.formatMsgTime(this.DetailData.updateTime);
       }).catch(res => {
         this.loading = true;
       });
@@ -88,12 +89,13 @@ export default {
       this.currentPage = page;
       commentPage({
         page: page,
+        pageSize: 20,
         postId: this.$route.params.id
       }).then(res => {
-        this.list = res.data;
-        this.total = res.total;
+        this.list = res.data.list;
+        this.total = res.data.total;
         for (let i = 0; i < this.list.length; i++) {
-          this.list[i].moment = this.formatMsgTime(this.list[i].moment);
+          this.list[i].updateTime = this.formatMsgTime(this.list[i].updateTime);
         }
       });
     },
@@ -146,12 +148,13 @@ export default {
       }
       if (this.content == null || this.content == '') {
         this.$Message.info('请填写什么!');
+        return;
       }
       comment({
         postId: this.$route.params.id,
         content: this.content
       }).then(res => {
-        if (res.code == 200) {
+        if (res.msg == '添加成功') {
           this.$Message.success('评论成功!');
           this.commentPage(this.currentPage);
           this.editorInstance.setContent('');
@@ -186,7 +189,7 @@ export default {
     //图片上传成功 后的  回调
     uploadImageSuccess(res, file){
       this.editorInstance.execCommand('insertimage', {
-        src: this.imgR + res.url,
+        src: 'http://47.99.113.195:3000' + res.data.url
       });
       this.progressShow = false;
       this.percent = 0;
@@ -197,46 +200,14 @@ export default {
       this.$Message.error('上传出错');
     },
     /**
-     * 删除评论
-     * @author hbb
-     * @param
-     */
-
-    deleteComment(id){
-      commentRemove({
-        commentId: id,
-        postId: this.$route.params.id
-      }).then(res => {
-        this.$Message.success('删除成功');
-        this.commentPage(this.currentPage);
-      });
-    },
-    goLink(id){
-      this.$router.push({
-        path: '/edit/' + id,
-      });
-    },
-    /**
-     * 删除自己的文章
-     * @author hbb
-     * @param
-     */
-    deleteArticle(id){
-      postsRemove(id).then(res => {
-        this.$Message.success('删除成功');
-        this.$router.push({
-          path: '/my-article'
-        });
-      });
-    },
-    /**
      * 推荐
      * @author hbb
      * @param
      */
     recommend(id){
       postRecommend({
-        postId: id
+        id: id,
+        'is_recommend': '1'
       }).then(res => {
         this.$Message.success('推荐成功');
         this.DetailData.is_recommend = 1;
@@ -249,10 +220,16 @@ export default {
      */
     cancelRecommend(id){
       postCancelRecommend({
-        postId: id
+        id: id,
+        'is_recommend': '0'
       }).then(res => {
-        this.$Message.success('取消成功');
+        this.$Message.success('取消推荐成功');
         this.DetailData.is_recommend = 0;
+      });
+    },
+    goLink(id){
+      this.$router.push({
+        path: '/edit/' + id,
       });
     },
   }

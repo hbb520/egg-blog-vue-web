@@ -1,6 +1,6 @@
 import {get_userInfo, put_UserInfo} from '@/api/user';
 import ArticleRight from '@/views/components/article-right/index.vue';
-import VueCoreImageUpload  from 'vue-core-image-upload';
+import VueCoreImageUpload from 'vue-core-image-upload';
 export default {
   name: 'people',
   components: {
@@ -18,7 +18,9 @@ export default {
       formItem: {
         nickname: null,
         lives_in_city: null,
-        introduction: null
+        introduction: null,
+        phone: null,
+        email: null
       },
       src: '/static/imgs/default_avatar.jpg',
     };
@@ -45,6 +47,9 @@ export default {
         this.formItem.lives_in_city = res.data.lives_in_city;
         this.formItem.nickname = res.data.nickname;
         this.formItem.introduction = res.data.introduction;
+        this.formItem.email = res.data.email;
+        this.formItem.phone = res.data.phone;
+
       });
     },
     /**
@@ -53,7 +58,7 @@ export default {
      * @param
      */
     imageuploaded(res){
-      this.src = res.url;
+      this.src = res.data.url;
     },
     errorhandle(){
       this.$Message.error('上传出错');
@@ -69,6 +74,8 @@ export default {
         nickname: this.formItem.nickname,
         lives_in_city: this.formItem.lives_in_city,
         introduction: this.formItem.introduction,
+        email: this.formItem.email,
+        phone: this.formItem.phone,
       }).then(res => {
         this.$Message.success('修改成功');
         this.get_userInfo();

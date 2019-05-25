@@ -4,9 +4,9 @@
       <div class="Card ">
         <Input v-model="title" placeholder="请输入标题(最多50字)" style="width: 100%"/>
         <div class="Tag-box">
-          <Button :type="item.color" size="small"
-                  @click="tagClick(item,index)" v-for="(item,index) in TagList" :key="item.tagText" class="my-tag">{{item.tagText}}
-          </Button>
+          <RadioGroup v-model="categoryId">
+            <Radio :label="item.id"  v-for="(item,index) in TagList" :key="index"> {{item.name}}</Radio>
+          </RadioGroup>
         </div>
         <div class="editor-box">
           <VueUEditor @ready="editorReady" style="width: 100%" :ueditorConfig="config"
@@ -16,7 +16,7 @@
             :show-upload-list="false"
             :on-error="onError"
             :on-success="uploadImageSuccess"
-            :action="BASE_API+'/upload'">
+            :action="'http://47.99.113.195:3000/api/upload'">
             <Button size="small" type="primary">上传图片</Button>
           </Upload>
         </div>

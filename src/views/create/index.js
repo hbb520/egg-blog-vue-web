@@ -1,4 +1,4 @@
-import {create, getDetail, edit} from '@/api/user';
+import {create, edit, getAllCategory, getDetail} from '@/api/user';
 import ArticleRight from '@/views/components/article-right/index.vue';
 import VueUEditor from '@/views/components/UEditor';
 
@@ -19,40 +19,9 @@ export default {
       title: '',
       DetailData: {},
       createPage: true,
-      TagList: [
-        {
-          color: 'primary',
-          tagText: '前端'
-        }, {
-          color: 'default',
-          tagText: 'vue'
-        }, {
-          color: 'default',
-          tagText: 'react'
-        }, {
-          color: 'default',
-          tagText: 'angular'
-        }, {
-          color: 'default',
-          tagText: 'node.js'
-        }, {
-          color: 'default',
-          tagText: '服务端'
-        }, {
-          color: 'default',
-          tagText: '数据库'
-        }, {
-          color: 'default',
-          tagText: '开发工具'
-        }, {
-          color: 'default',
-          tagText: '服务器'
-        }, {
-          color: 'default',
-          tagText: '娱乐'
-        }
-      ],
+      TagList: [],
       content: '',
+      categoryId: null,
       editorInstance: null,
       config: {
         toolbars: [[
@@ -74,7 +43,8 @@ export default {
         // pasteplain: true,  //纯文本链接
         // retainOnlyLabelPasted: true,
         // elementPathEnabled: false  //是否启用元素路径，默认是显示
-      }
+      },
+      html: '<p><embed type="application/x-shockwave-flash" class="edui-faked-video" pluginspage="http://www.macromedia.com/go/getflashplayer" src="http://player.youku.com/player.php/sid/XMzg4MTg4ODIzNg==/v.swf" width="420" height="280" wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true"/></p>'
 
     };
 
@@ -101,7 +71,7 @@ export default {
   beforeDestroy() {
   },
   created() {
-
+    this.getAllCategory();
 
   },
   methods: {
@@ -131,18 +101,13 @@ export default {
         this.$Message.info('请丰富你的文章内容');
         return;
       }
-      let tag = '';
-      for (let i = 0; i < this.TagList.length; i++) {
-        if (this.TagList[i].color == 'primary') {
-          tag = this.TagList[i].tagText;
-        }
-      }
+
       create({
         title: this.title,
         content: this.content,
-        tag: tag
+        categoryId: this.categoryId
       }).then(res => {
-        if (res.code == 200) {
+        if (res.status == 0) {
           this.$Message.success('发布成功!');
           this.$router.push('/all-article');
         } else {
@@ -166,23 +131,35 @@ export default {
         });
         return;
       }
+      if (this.title == null || this.title == '') {
+        this.$Message.info('请填写标题!');
+        return;
+      } else if (this.title.length < 2) {
+        this.$Message.info('请丰富你的标题');
+        return;
+      }
       if (this.content == null || this.content == '') {
-        this.$Message.info('请填写什么!');
+        this.$Message.info('请填写文章内容!');
+        return;
+      } else if (this.title.content < 10) {
+        this.$Message.info('请丰富你的文章内容');
+        return;
       }
-      let tag = '';
-      for (let i = 0; i < this.TagList.length; i++) {
-        if (this.TagList[i].color == 'primary') {
-          tag = this.TagList[i].tagText;
-        }
-      }
-      edit({
+      create({
         title: this.title,
         content: this.content,
-        postId: this.$route.params.id,
-        tag: tag
+        categoryId: this.categoryId,
+        id: this.$route.params.id
       }).then(res => {
-        this.$Message.success('发布成功!');
-        this.$router.push('/all-article');
+        if (res.status == 0) {
+          this.$Message.success('发布成功!');
+          this.$router.push('/all-article');
+        } else {
+          this.$Notice.warning({
+            title: '发布失败',
+            desc: '请检查内容是否有特殊字符串'
+          });
+        }
       });
     },
     /**
@@ -204,7 +181,7 @@ export default {
     //这里写了默认前缀地址,根据你的服务可变动
     uploadImageSuccess(res, file){
       this.editorInstance.execCommand('insertimage', {
-        src: this.myimgR + res.url,
+        src: 'http://47.99.113.195:3000' + res.data.url
       });
       this.progressShow = false;
       this.percent = 0;
@@ -224,21 +201,25 @@ export default {
         getDetail(this.$route.params.id).then(res => {
           this.DetailData = res.data;
           this.title = res.data.title;
+          this.categoryId = res.data.categoryId;
           this.editorInstance.setContent(res.data.content);
         });
       }
     },
     /**
-     * 点击标签
+     * 分类
      * @author hbb
-     * @param
+     * @param 0 顶级节点
      */
-    tagClick(item){
-      console.log(item);
-      for (let i = 0; i < this.TagList.length; i++) {
-        this.TagList[i].color = 'default';
-      }
-      item.color = 'primary';
-    }
+    getAllCategory(){
+      getAllCategory(0).then(res => {
+        this.TagList = res.data;
+        if (this.TagList.length > 0) {
+          this.categoryId = this.TagList[0].id;
+        }
+      });
+    },
+
+
   }
 };

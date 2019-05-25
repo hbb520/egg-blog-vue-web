@@ -1,4 +1,4 @@
-import {getAllPage, getMyPage} from '@/api/user';
+import {getAllCategory, getAllPage, getMyPage} from '@/api/user';
 import ArticleRight from '@/views/components/article-right/index.vue';
 export default {
   name: 'home',
@@ -16,39 +16,8 @@ export default {
       },
       list: [],
       total: 0,
-      TagList: [
-        {
-          color: 'primary',
-          tagText: '前端'
-        }, {
-          color: 'default',
-          tagText: 'vue'
-        }, {
-          color: 'default',
-            tagText: 'react'
-        }, {
-          color: 'default',
-          tagText: 'angular'
-        }, {
-          color: 'default',
-          tagText: 'node.js'
-        }, {
-          color: 'default',
-          tagText: '服务端'
-        }, {
-          color: 'default',
-          tagText: '数据库'
-        }, {
-          color: 'default',
-          tagText: '开发工具'
-        }, {
-          color: 'default',
-          tagText: '服务器'
-        },{
-          color: 'default',
-          tagText: '娱乐'
-        }
-      ],
+      currentPage: 1,
+      TagList: [],
       tag: null
     };
 
@@ -69,6 +38,7 @@ export default {
   beforeDestroy() {
   },
   created() {
+    this.getAllCategory();
     this.getAllPage(1);
   },
   methods: {
@@ -83,33 +53,36 @@ export default {
         this.queryData.title = this.$route.query.title;
       }
       let data = {
-        page: page,
+        pageNum: page,
         title: this.queryData.title,
-        tag: this.tag
+        categoryId: this.tag
       };
-      let type = 1;
-      let is_recommend = 0;
+      let isMy = false;
+      let is_recommend = null;
       if (this.tag == '推荐') {
         is_recommend = 1;
         this.tag = null;
       }
       if (this.$route.path == '/all-article') {
-        type = 1;
+        isMy = false;
         data = {
-          page: page,
+          pageNum: page,
+          pageSize: 20,
           title: this.queryData.title,
-          tag: this.tag,
+          categoryId: this.tag,
           is_recommend: is_recommend
         };
       } else if (this.$route.path == '/my-article') {
-        type = 2;
+        isMy = true;
         data = {
-          page: page
+          page: page,
+          pageNum: page,
+          pageSize: 20,
         };
       }
-      getAllPage(data, type).then(res => {
-        this.list = res.data;
-        this.total = res.total;
+      getAllPage(data, isMy).then(res => {
+        this.list = res.data.list;
+        this.total = res.data.total;
         let imgReg = /<img.*?(?:>|\/>)/gi;
         let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
         document.body.scrollTop = document.documentElement.scrollTop = 0;
@@ -133,12 +106,21 @@ export default {
 
     },
     /**
+     * 分类
+     * @author hbb
+     * @param 0 顶级节点
+     */
+    getAllCategory(){
+      getAllCategory(0).then(res => {
+        this.TagList = res.data;
+      });
+    },
+    /**
      * tab点击事件
      * @author hbb
      * @param
      */
     tabClick(name){
-
       if (name == '所有') {
         this.tag = null;
       } else {

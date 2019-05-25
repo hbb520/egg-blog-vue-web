@@ -47,17 +47,22 @@ export default {
      * @param
      */
     put_updateUserPs(){
+      if (this.formItem.newPassword != this.formItem.repeatpass) {
+        this.$Message.error(
+          '两次输入的密码不一致'
+        );
+        return;
+      }
       put_updateUserPs({
-        oldPassword: this.formItem.oldPassword,
-        newPassword: this.formItem.newPassword,
-        repeatpass: this.formItem.repeatpass,
+        passwordOld: this.formItem.oldPassword,
+        passwordNew: this.formItem.newPassword
       }).then(res => {
-        if (res.code == 200) {
+        if (res.status == 0) {
           this.$Message.success('修改成功');
           this.goLink('/login');
-        } else {
+        } else if (res.status == 1 && res.msg == '旧密码错误') {
           this.$Message.error(
-            res.message
+            res.msg
           );
         }
 

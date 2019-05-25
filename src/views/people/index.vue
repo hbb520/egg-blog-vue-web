@@ -3,12 +3,6 @@
     <div class="article-left ">
       <div class="Card">
         <Form :model="formItem" :label-width="100">
-          <FormItem label="账号">
-            {{infoData.name}}
-          </FormItem>
-          <FormItem label="密码">
-            <Button type="primary" @click="goLink('/change-password')">修改密码</Button>
-          </FormItem>
           <FormItem label="昵称">
             <Input v-model="formItem.nickname" placeholder="请填写"></Input>
           </FormItem>
@@ -28,10 +22,19 @@
                 @errorhandle="errorhandle"
                 input-of-file="file"
                 :max-file-size="5242880"
-                url="http://47.99.113.195/api/upload">
+                url="http://47.99.113.195:3000/api/upload">
               </vue-core-image-upload>
             </div>
 
+          </FormItem>
+          <FormItem label="密码">
+            <Button type="primary" @click="goLink('/change-password')">修改密码</Button>
+          </FormItem>
+          <FormItem label="手机号">
+            <Input v-model="formItem.phone" placeholder="请填写"></Input>
+          </FormItem>
+          <FormItem label="邮箱">
+            <Input v-model="formItem.email" placeholder="请填写"></Input>
           </FormItem>
           <FormItem label="现居城市">
             <Input v-model="formItem.lives_in_city" placeholder="请填写"></Input>

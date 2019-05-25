@@ -10,7 +10,7 @@ export default {
       showBackToTop: false,
       hover: false,
       scrollTop: 0,
-      username: this.$Cookies.get('username'),
+      username: this.$Cookies.get('nickname'),
       logo: this.$Cookies.get('logo'),
       value: null,
       visible: false,
