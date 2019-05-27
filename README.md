@@ -1,6 +1,6 @@
-# Koa2-blog-vue-web
+# egg-blog-vue-web
 
-> 服务端接口基于[Koa2-blog-vue](https://github.com/hbb520/Koa2-blog-vue)
+> 服务端接口基于[egg-blog](https://github.com/hbb520/egg-blog)
 
 ## Build Setup
 
